@@ -2,7 +2,6 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
-using InstaLoaderMaui;
 
 namespace InstaLoaderMaui.Platforms.Android
 {
@@ -11,7 +10,7 @@ namespace InstaLoaderMaui.Platforms.Android
     {
         private static string Tag = "DownloadService";
 
-        public const int NOTIFICATION_ID = 3599;
+        public const int NOTIFICATION_ID = 3699;
         const string channelId = "spotiflyer_channel";
         const string channelName = "SpotiFlyer";
         const string channelDescription = "SpotiFlyer's channel for notifications.";
@@ -43,7 +42,7 @@ namespace InstaLoaderMaui.Platforms.Android
             if (intent.Action == "START_SERVICE")
             {
                 // start download
-                Downloader.DownloadPost(MainPage.PostId, MainPage.AbsPathDocsTemp);
+                Downloader.DownloadPost(MainPage.PostId, MainPage.AbsPathDocs);
             }
             else if (intent.Action == "STOP_SERVICE")
             {
@@ -92,7 +91,7 @@ namespace InstaLoaderMaui.Platforms.Android
             manager.CreateNotificationChannel(channel);
             Notification notification = new Notification.Builder(this, channelId)
                .SetContentTitle(notificationTitle)
-               .SetSmallIcon(Android.Resource.Drawable.ArrowDownFloat)
+               .SetSmallIcon(Resource.Drawable.material_ic_menu_arrow_down_black_24dp)
                .SetProgress(max_progress, progress, false)
                .SetOngoing(true)
                .SetContentIntent(pendingIntent)
@@ -144,7 +143,7 @@ namespace InstaLoaderMaui.Platforms.Android
             }
             return new Notification.Builder(this, channelId)
                     .SetContentTitle(notificationTitle)
-               .SetSmallIcon(Android.Resource.Drawable.ArrowDownFloat)
+               .SetSmallIcon(Resource.Drawable.material_ic_menu_arrow_down_black_24dp)
                .SetProgress(max_progress, progress, false)
                .SetOngoing(true)
                .SetContentIntent(pendingIntent)

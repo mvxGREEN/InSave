@@ -4,6 +4,8 @@ using MPowerKit.ProgressRing;
 using Firebase;
 using Microsoft.Maui.Handlers;
 using InstaLoaderMaui.Platforms.Android;
+using Android.Util;
+
 
 
 
@@ -248,9 +250,6 @@ namespace InstaLoaderMaui
         {
             base.OnAppearing();
 
-            // prepare destination file dirs
-            PrepareFileDirs();
-
             // check gold
             MIsNotGold = !Preferences.Default.Get("IS_GOLD", false);
             Console.WriteLine($"{Tag}, IS_GOLD={!MIsNotGold}");
@@ -263,6 +262,9 @@ namespace InstaLoaderMaui
             // init admob
             MainActivity.ActivityCurrent.LoadAdmob();
 #endif
+
+            // prepare destination file dirs
+            PrepareFileDirs();
         }
 
 
@@ -281,33 +283,25 @@ namespace InstaLoaderMaui
 #endif
         }
 
-        public static void PrepareFileDirs()
+        private static void PrepareFileDirs()
         {
-            Console.WriteLine($"{Tag}: PrepareFileDirs");
+            Console.WriteLine($"{Tag}: {nameof(PrepareFileDirs)}");
 
-            AbsPathDocs =
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            // set destination paths
+            AbsPathDocs = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDocuments);
             AbsPathDocsTemp = AbsPathDocs + "/temp";
 
-#if ANDROID
-            AbsPathDocs = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDocuments);
-
-            //AbsPathMusic = context.GetExternalFilesDir(Android.OS.Environment.DirectoryMusic).AbsolutePath;
-
+            // prepare destination file dirs
             Java.IO.File files = new Java.IO.File(AbsPathDocs);
             files.SetWritable(true);
             Directory.CreateDirectory(Path.GetDirectoryName(AbsPathDocs));
-            Console.WriteLine($"{Tag}: AbsPathDocs={AbsPathDocs}");
 
+            // prepare temp dir
             Java.IO.File temp_files = new Java.IO.File(AbsPathDocsTemp);
             temp_files.SetWritable(true);
             Directory.CreateDirectory(Path.GetDirectoryName(AbsPathDocsTemp));
-            Console.WriteLine($"{Tag}: AbsPathDocsTemp={AbsPathDocsTemp}");
-#endif
 
-            // append / to paths for future usage
-            AbsPathDocs += "/";
-            AbsPathDocsTemp += "/";
+            Console.WriteLine($"{Tag}: {nameof(PrepareFileDirs)} AbsPathDocs={AbsPathDocs} AbsPathDocsTemp={AbsPathDocsTemp}");
         }
 
         public static void ResetVars()
