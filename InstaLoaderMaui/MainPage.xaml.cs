@@ -28,6 +28,8 @@ namespace InstaLoaderMaui
 
         private uint ANIM_LENGTH = 400;
         private readonly string INPUT_REGEX = "^$|((?:https?:\\/\\/)((?:www\\.)|(?:m\\.))?instagram\\.com\\/)";
+
+        public static InstaLoader MInstaLoader;
         public static string AbsPathDocs = "";
         public static string AbsPathDocsTemp = "";
         public static String PostId = ""; // post id to download
@@ -267,25 +269,12 @@ namespace InstaLoaderMaui
             PrepareFileDirs();
         }
 
-
-
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-
-#if ANDROID
-            if (null != pwv)
-            {
-                ((IWebViewHandler)pwv.Handler).PlatformView.SetWebViewClient(null);
-                ((IWebViewHandler)pwv.Handler).PlatformView.Destroy();
-                pwv = null;
-            }
-#endif
-        }
-
-        private static void PrepareFileDirs()
+        public static void PrepareFileDirs()
         {
             Console.WriteLine($"{Tag}: {nameof(PrepareFileDirs)}");
+
+            // init InstaLoader
+            MInstaLoader = new InstaLoader(Android.App.Application.Context);
 
             // set destination paths
             AbsPathDocs = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDocuments);
@@ -303,6 +292,22 @@ namespace InstaLoaderMaui
 
             Console.WriteLine($"{Tag}: {nameof(PrepareFileDirs)} AbsPathDocs={AbsPathDocs} AbsPathDocsTemp={AbsPathDocsTemp}");
         }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+
+#if ANDROID
+            if (null != pwv)
+            {
+                ((IWebViewHandler)pwv.Handler).PlatformView.SetWebViewClient(null);
+                ((IWebViewHandler)pwv.Handler).PlatformView.Destroy();
+                pwv = null;
+            }
+#endif
+        }
+
+        
 
         public static void ResetVars()
         {

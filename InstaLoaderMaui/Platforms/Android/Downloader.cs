@@ -1,26 +1,19 @@
-﻿using Android.Content;
-using Green.Mobileapps.Instaloader;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Green.Mobileapps.Instaloader;
 
 namespace InstaLoaderMaui.Platforms.Android
 {
     static class Downloader
     {
         private static readonly string Tag = nameof(Downloader);
-        public static async Task DownloadPost(string id, string path)
+        public static async Task DownloadPost(InstaLoader instaLoader, string id, string path)
         {
             Console.WriteLine($"{Tag} DownloadPost: id={id} path={path}");
 
             // TODO remove
             // id = "DJ3NrwjxC_7";
 
-            var instaLoader = new InstaLoader(MainActivity.ActivityCurrent);
-            string filePath = instaLoader.DownloadPost(id, path);
-            //string filePath = instaLoader.DownloadPost(id, path + id + ".jpg");
+            //string filePath = instaLoader.DownloadPost(id, path);
+            string filePath = instaLoader.DownloadPost(id, path.TrimStart('/').TrimEnd('/'));
 
             // TODO scan file
             //ScanDownload(filePath);

@@ -2,6 +2,10 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Green.Mobileapps.Instaloader;
+using Android.Util;
+using Android.Content;
+using Android.Preferences;
 
 namespace InstaLoaderMaui.Platforms.Android
 {
@@ -42,7 +46,7 @@ namespace InstaLoaderMaui.Platforms.Android
             if (intent.Action == "START_SERVICE")
             {
                 // start download
-                Downloader.DownloadPost(MainPage.PostId, MainPage.AbsPathDocs);
+                Downloader.DownloadPost(MainPage.MInstaLoader, MainPage.PostId, MainPage.AbsPathDocs);
             }
             else if (intent.Action == "STOP_SERVICE")
             {
