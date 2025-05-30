@@ -28,6 +28,7 @@ namespace InstaLoaderMaui
         private readonly string INPUT_REGEX = "^$|((?:https?:\\/\\/)((?:www\\.)|(?:m\\.))?instagram\\.com\\/)";
         public static string AbsPathDocs = "";
         public static string AbsPathDocsTemp = "";
+        public static String PostId = ""; // post id to download
 
         public static string AdmobIdApp = "ca-app-pub-7417392682402637~9405504691";
         public static string admobIdInterTest = "ca-app-pub-3940256099942544/1033173712";
@@ -236,10 +237,11 @@ namespace InstaLoaderMaui
             }
         }
 
-        public MainPage()
+        public MainPage(IServiceDownload s)
         {
             InitializeComponent();
             BindingContext = this;
+            Services = s;
         }
 
         protected override void OnAppearing()
@@ -764,7 +766,7 @@ namespace InstaLoaderMaui
         {
             StatusLabel.Text = "";
             var input = main_textfield.Text?.Trim();
-            DownloadUrl(input);
+            DownloadInput(input);
             //Dispatcher.Dispatch(async () => await DownloadUrl(input));
         }
 
@@ -892,11 +894,11 @@ namespace InstaLoaderMaui
             }
 #endif
 
-            DownloadUrl(input);
+            DownloadInput(input);
             //Dispatcher.Dispatch(async () => await DownloadUrl(input));
         }
 
-        private void DownloadUrl(string input)
+        private void DownloadInput(string input)
         {
             // validate input
             var match = Regex.Match(input, INPUT_REGEX, RegexOptions.IgnoreCase);
@@ -938,43 +940,10 @@ namespace InstaLoaderMaui
                 return;
             }
 
-            // download post
-            try
-            {
-                Downloader.DownloadPost(input, AbsPathDocs);
+            PostId = input;
 
-                /* get media urls
-                var mediaUrls = await GetInstagramMediaUrlsAsync(url);
-                if (mediaUrls == null || mediaUrls.Count == 0)
-                {
-                    StatusLabel.Text = "Could not extract media URLs.";
-                    return;
-                } else
-                {
-                    for (int i = 0; i < mediaUrls.Count; i++)
-                    {
-                        Console.WriteLine($"{Tag} mediaUrls[{i}]={mediaUrls[i]}");
-                    }
-                }
-
-                // TODO download all media urls
-                var mediaUrl = mediaUrls[0]; // Use the first media URL for download
-                var fileName = Path.GetFileName(new Uri(mediaUrl).LocalPath);
-                var filePath = Path.Combine(AbsPathDocs, fileName);
-
-                using var httpClient = new HttpClient();
-                var bytes = await httpClient.GetByteArrayAsync(mediaUrl);
-                File.WriteAllBytes(filePath, bytes);
-                */
-
-            }
-            catch (Exception ex)
-            {
-                StatusLabel.Text = $"Error: {ex.Message}";
-            }
+            Services.Start();
         }
-
-        // TODO call instaloader
 
         /*
          static async Task<List<string>> GetInstagramMediaUrlsAsync(string postUrl)

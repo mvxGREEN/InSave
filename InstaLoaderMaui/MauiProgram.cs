@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using UraniumUI;
+using InstaLoaderMaui.Platforms.Android;
+
+
 
 #if ANDROID
 using Firebase;
@@ -59,6 +62,10 @@ public static class MauiProgram
                     });
                 });
             });
+
+        // dependency injection
+        builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<IServiceDownload, DownloadService>();
 #endif
 
 #if DEBUG

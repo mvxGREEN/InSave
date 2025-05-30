@@ -11,25 +11,20 @@ namespace InstaLoaderMaui.Platforms.Android
     static class Downloader
     {
         private static readonly string Tag = nameof(Downloader);
-        public static void DownloadPost(string id, string path)
+        public static async Task DownloadPost(string id, string path)
         {
             Console.WriteLine($"{Tag} DownloadPost: id={id} path={path}");
 
             // TODO remove
-            //id = "DJ3NrwjxC_7";
-
-            Java.IO.File files = new Java.IO.File(path);
-            files.SetWritable(true);
-
-            files = new Java.IO.File(path + id);
-            files.SetWritable(true);
+            // id = "DJ3NrwjxC_7";
 
             var instaLoader = new InstaLoader(MainActivity.ActivityCurrent);
-            string filePath = instaLoader.DownloadPost(id, path + id);
-            
+            string filePath = instaLoader.DownloadPost(id, path);
+            //string filePath = instaLoader.DownloadPost(id, path + id + ".jpg");
+
             // TODO scan file
             //ScanDownload(filePath);
-            
+
             /*
              * TODO update UI
             MainThread.InvokeOnMainThreadAsync(() =>
