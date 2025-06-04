@@ -27,11 +27,14 @@ namespace InstaLoaderMaui
 
         private uint ANIM_LENGTH = 400;
         private readonly string INPUT_REGEX = "^$|((?:https?:\\/\\/)((?:www\\.)|(?:m\\.))?instagram\\.com\\/)";
+        public static readonly string UA_DESKTOP_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+           UA_DESKTOP_OPERA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0",
+            UA_MOBILE_CHROME = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36";
 
         public static InstaLoader MInstaLoader;
         public static string AbsPathDocs = "";
         public static string AbsPathDocsTemp = "";
-        public static String PostId = ""; // post id to download
+        public static String PostId = "";
 
         public static string AdmobIdApp = "ca-app-pub-7417392682402637~9405504691";
         public static string admobIdInterTest = "ca-app-pub-3940256099942544/1033173712";
@@ -268,6 +271,20 @@ namespace InstaLoaderMaui
             PrepareFileDirs();
         }
 
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+
+#if ANDROID
+            if (null != pwv)
+            {
+                ((IWebViewHandler)pwv.Handler).PlatformView.SetWebViewClient(null);
+                ((IWebViewHandler)pwv.Handler).PlatformView.Destroy();
+                pwv = null;
+            }
+#endif
+        }
+
         public static void PrepareFileDirs()
         {
             Console.WriteLine($"{Tag}: {nameof(PrepareFileDirs)}");
@@ -291,22 +308,6 @@ namespace InstaLoaderMaui
 
             Console.WriteLine($"{Tag}: {nameof(PrepareFileDirs)} AbsPathDocs={AbsPathDocs} AbsPathDocsTemp={AbsPathDocsTemp}");
         }
-
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-
-#if ANDROID
-            if (null != pwv)
-            {
-                ((IWebViewHandler)pwv.Handler).PlatformView.SetWebViewClient(null);
-                ((IWebViewHandler)pwv.Handler).PlatformView.Destroy();
-                pwv = null;
-            }
-#endif
-        }
-
-        
 
         public static void ResetVars()
         {
@@ -340,6 +341,8 @@ namespace InstaLoaderMaui
             }
         }
 
+        
+
         // USER INTERFACE
         public async Task ShowEmptyUI()
         {
@@ -347,6 +350,11 @@ namespace InstaLoaderMaui
 
             ResetVars();
             UpdateUpgradeItem();
+
+            // init webview
+            var pmv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
+            pmv.UserAgent = UA_DESKTOP_CHROME;
+            //ModifyWebView();
 
             // hide buttons
             ButtonView finishBtn = (ButtonView)FindByName("finish_btn");
@@ -892,10 +900,15 @@ namespace InstaLoaderMaui
                 pwv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
                 ((IWebViewHandler)pwv.Handler).PlatformView
                     .SetWebViewClient(new MWebViewClient());
+
+                //((IWebViewHandler)pwv.Handler).PlatformView.Settings.UserAgentString =
+                //        UA_DESKTOP_CHROME;
+
                 ((IWebViewHandler)pwv.Handler).PlatformView.Post(() =>
                 {
                     ((IWebViewHandler)pwv.Handler).PlatformView
-                    .LoadUrl(input);
+                    .LoadUrl("https://instagram.com/#");
+                    
                 });
             });
 
@@ -979,6 +992,11 @@ namespace InstaLoaderMaui
 
             PostId = postUrl;
 
+            // TODO replace with profile name
+            MTitle = PostId;
+
+            // init webview + client
+
             Services.Start();
         }
 
@@ -996,21 +1014,28 @@ namespace InstaLoaderMaui
                 Console.WriteLine($"{Tag} {v}");
             }
 
-            // Look for og:image or og:video meta tags
+            // get url from og:image
             string turl = "";
             var imgMatch = Regex.Match(html, "<meta property=\"og:image\" content=\"([^\"]+)\"");
             if (imgMatch.Success)
                 turl = imgMatch.Groups[1].Value.ToString();
 
-            var videoMatch = Regex.Match(html, "<meta property=\"og:video\" content=\"([^\"]+)\"");
-            if (videoMatch.Success)
-                turl = videoMatch.Groups[1].Value.ToString();
-
+            // fix url 
             if (turl.Contains("&amp;"))
                 turl = turl.Replace("&amp;", "&");
 
-            Console.WriteLine($"{Tag} found thumbnail turl={turl}");
+            // check if empty (not logged in)
+            if (turl.Length > 0)
+            {
+                Console.WriteLine($"{Tag} empty og:image -- not logged in");
 
+                // show webview
+                var pmv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
+                pmv.IsVisible = true;
+
+            }
+
+            Console.WriteLine($"{Tag} found thumbnail url: turl={turl}");
             return turl;
         }
 
@@ -1026,17 +1051,34 @@ namespace InstaLoaderMaui
 
             // TODO track cookie for login session (USER?)
 
+            public override void OnPageFinished(Android.Webkit.WebView? view, string? url)
+            {
+                Console.WriteLine($"{Tag} OnPageFinished url={url}");
+                base.OnPageFinished(view, url);
+            }
+
+            public override bool ShouldOverrideUrlLoading(Android.Webkit.WebView? view, string? url)
+            {
+                Console.WriteLine($"{Tag} ShouldOverrideUrlLoading url={url}");
+                return false;
+            }
+
             public override WebResourceResponse? ShouldInterceptRequest(global::Android.Webkit.WebView? view, IWebResourceRequest? request)
             {
                 string url = request.Url.ToString();
-                Console.WriteLine($"{Tag} ShouldInterceptRequest url={url}");
+                Console.WriteLine($"{Tag} ShouldInterceptRequest request url={url}");
                 MainPage mp = (MainPage)Shell.Current.CurrentPage;
 
-                // remove self from webview when finished intercepting request
-                MainThread.BeginInvokeOnMainThread(() =>
+                // TODO handle successful login
+
+                // TODO hide webview
+
+                // remove self from webview when finished
+                /*MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ((IWebViewHandler)mp.pwv.Handler).PlatformView.SetWebViewClient(null);
                 });
+                */
 
                 return base.ShouldInterceptRequest(view, request);
             }

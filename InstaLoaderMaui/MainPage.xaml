@@ -74,7 +74,7 @@
                         BackgroundColor="{StaticResource PointOh}"
                         CornerRadius="10"
                         ZIndex="1"
-                        AbsoluteLayout.LayoutBounds="0,0,1,360"
+                        AbsoluteLayout.LayoutBounds="0,0,1,460"
                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional">
                         <!-- THUMBNAIL -->
                         <Image x:Name="preview_img"
@@ -84,10 +84,14 @@
                             ZIndex="1"
                             Margin="-20"
                             Opacity="0.0"/>
+                        <!-- WEBVIEW -->
+                        <WebView x:Name="preview_webview"
+                            AbsoluteLayout.LayoutBounds="0,0,1,460"
+                            AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
+                            IsVisible="True"
+                            IsEnabled="True"/>
                     </Frame>
-                    <!-- WEBVIEW -->
-                    <WebView x:Name="preview_webview"
-                    IsVisible="False" />
+                    
                     <!-- PROGRESS -->
                     <VerticalStackLayout AbsoluteLayout.LayoutBounds="0.5,0.5,1,100"
                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional">
@@ -113,6 +117,7 @@
                             TextColor="{AppThemeBinding Dark={StaticResource White}, Light={StaticResource Black}}"
                             HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
+                    
                 </AbsoluteLayout>
 
                 <!-- DOWNLOADER -->
@@ -130,11 +135,13 @@
                              Spacing="10">
                             <!-- DOWNLOAD BUTTON -->
                             <material:ButtonView x:Name="dl_btn"
-                                WidthRequest="60"
-                                HeightRequest="60"
+                                WidthRequest="56"
+                                HeightRequest="56"
                                 Opacity="0.0">
                                 <ImageButton 
-                                    Clicked="OnDownloadClicked">
+                                    Clicked="OnDownloadClicked"
+                                    WidthRequest="32"
+                                    HeightRequest="32">
                                     <ImageButton.Source>
                                         <FontImageSource FontFamily="FASolid"        
                                              Glyph="{x:Static fa:Solid.CircleDown}" 
@@ -153,8 +160,8 @@
                                  IsVisible="False"/>
                             <!-- FINISH BUTTON -->
                             <material:ButtonView x:Name="finish_btn"
-                                    WidthRequest="60"
-                                    HeightRequest="60"
+                                    WidthRequest="56"
+                                    HeightRequest="56"
                                     Opacity="0.0"
                                     IsVisible="False">
                                 <ImageButton>
