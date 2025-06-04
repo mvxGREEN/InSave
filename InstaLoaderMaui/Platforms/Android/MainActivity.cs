@@ -699,14 +699,14 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
             }
 
             // cleanup files
-            string filepath = MainPage.AbsPathDocs + MainPage.PostId;
+            string filepath = MainPage.AbsPathDocs + MainPage.IgId;
             Java.IO.File docs = new Java.IO.File(MainPage.AbsPathDocs);
             if (docs.IsDirectory)
             {
                 Java.IO.File[] allContents = docs.ListFiles();
                 foreach (Java.IO.File file in allContents)
                 {
-                    if (file.Name.StartsWith(PostId))
+                    if (file.Name.StartsWith(IgId))
                     {
                         Console.WriteLine($"{Tag} found instaloader file: file.Name={file.Name}");
 

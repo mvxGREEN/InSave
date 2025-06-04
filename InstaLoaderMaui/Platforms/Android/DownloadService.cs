@@ -48,7 +48,7 @@ namespace InstaLoaderMaui.Platforms.Android
                 Task.Run(async () =>
                 {
                     // start download task
-                    await Downloader.DownloadPost(MainPage.MInstaLoader, MainPage.PostId, MainPage.AbsPathDocs);
+                    await Downloader.DownloadPost(MainPage.MInstaLoader, MainPage.IgId, MainPage.AbsPathDocs);
                 });
 
             }

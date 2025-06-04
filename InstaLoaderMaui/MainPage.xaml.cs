@@ -6,6 +6,8 @@ using Microsoft.Maui.Handlers;
 using InstaLoaderMaui.Platforms.Android;
 using Android.Util;
 using Android.Webkit;
+using Android.Nfc;
+
 
 
 #if ANDROID
@@ -34,7 +36,8 @@ namespace InstaLoaderMaui
         public static InstaLoader MInstaLoader;
         public static string AbsPathDocs = "";
         public static string AbsPathDocsTemp = "";
-        public static String PostId = "";
+        public static string IgId = "";
+        public static string MCookies = "";
 
         public static string AdmobIdApp = "ca-app-pub-7417392682402637~9405504691";
         public static string admobIdInterTest = "ca-app-pub-3940256099942544/1033173712";
@@ -895,32 +898,85 @@ namespace InstaLoaderMaui
             {
                 Console.WriteLine($"{Tag} failed to log event: {e.Message}");
             }
-            // load url in webview
-            MainThread.BeginInvokeOnMainThread(() => {
-                pwv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
-                ((IWebViewHandler)pwv.Handler).PlatformView
-                    .SetWebViewClient(new MWebViewClient());
 
-                //((IWebViewHandler)pwv.Handler).PlatformView.Settings.UserAgentString =
-                //        UA_DESKTOP_CHROME;
+            // get id (or username)
+            IgId = input[..input.IndexOf('/')];
+            if (IgId.Contains('/'))
+            {
+                IgId = IgId[(IgId.LastIndexOf('/') + 1)..];
+                
+            }
+            MTitle = IgId;
+            Console.WriteLine($"{Tag} input={input} IgId={IgId}");
 
-                ((IWebViewHandler)pwv.Handler).PlatformView.Post(() =>
-                {
-                    ((IWebViewHandler)pwv.Handler).PlatformView
-                    .LoadUrl("https://instagram.com/#");
-                    
-                });
-            });
+            // check url type
+            if (input.Contains("instagram.com/p/"))
+            {
+                Console.WriteLine($"{Tag} input is an instagram post");
 
+                // load post
+            }
+            else if (input.Contains("instagram.com/reel/"))
+            {
+                Console.WriteLine($"{Tag} input is an instagram reel");
+
+
+            }
+            else if (input.Contains("instagram.com/s/"))
+            {
+                Console.WriteLine($"{Tag} input is an instagram story");
+
+
+            }
+            else 
+            {
+                Console.WriteLine($"{Tag} input is an instagram profile");
+
+
+            }
+
+            // scrape metadata
             try {
                 Task.Run(async () =>
                 {
+                    // get thumbnail
                     MThumbnailUrl = await GetPostThumbnailUrl(input);
 
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    // check if requires login
+                    if (MThumbnailUrl == null || MThumbnailUrl.Length == 0)
                     {
-                        ShowPreviewUI();
-                    });
+                        Console.WriteLine($"{Tag} post is private or not found");
+                        MMessageToast = "Post not found or private.";
+
+                        // show login page in webview
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            pwv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
+                            pwv.IsVisible = true;
+                            pwv.IsEnabled = true;
+
+                            ((IWebViewHandler)pwv.Handler).PlatformView
+                                .SetWebViewClient(new MWebViewClient());
+
+                            //((IWebViewHandler)pwv.Handler).PlatformView.Settings.UserAgentString =
+                            //        UA_DESKTOP_CHROME;
+
+                            ((IWebViewHandler)pwv.Handler).PlatformView.Post(() =>
+                            {
+                                ((IWebViewHandler)pwv.Handler).PlatformView
+                                .LoadUrl("https://www.instagram.com/accounts/login/?hl=en");
+                                // https://www.instagram.com/?flo=true
+                            });
+                        });
+                    }
+                    else
+                    {
+                        // update ui
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            ShowPreviewUI();
+                        });
+                    }
 
                 });
             }
@@ -939,30 +995,7 @@ namespace InstaLoaderMaui
 
         private void DownloadPost(string postUrl)
         {
-            // validate input
-            var match = Regex.Match(postUrl, INPUT_REGEX, RegexOptions.IgnoreCase);
-            if (!match.Success)
-            {
-                Console.WriteLine($"{Tag} input invalid");
-
-                // log event
-#if ANDROID
-                try
-                {
-                    Bundle bun = new();
-                    bun.PutString("input", "load");
-                    bun.PutBoolean("input_valid", false);
-                    bun.PutString("input_text", postUrl);
-                    bun.PutString("app_name", "soundloader");
-                    FirebaseAnalytics.GetInstance((MainActivity)Platform.CurrentActivity).LogEvent("input_load", bun);
-                }
-                catch (Exception er)
-                {
-                    Console.WriteLine($"{Tag} failed to log event: {er.Message}");
-                }
-#endif
-                return;
-            }
+            Console.WriteLine($"{Tag} DownloadPost postUrl={postUrl}");
 
             // register finish reciever
             MainActivity ma = (MainActivity)Platform.CurrentActivity;
@@ -974,28 +1007,6 @@ namespace InstaLoaderMaui
             {
                 ma.RegisterReceiver(MainActivity.MFinishReceiver, new IntentFilter("69"));
             }
-
-            // trim to post id
-            if (postUrl.Contains("instagram.com/p/"))
-            {
-                postUrl = postUrl[(postUrl.IndexOf("instagram.com/p/") + 16)..];
-                if (postUrl.Contains('/'))
-                {
-                    postUrl = postUrl[..postUrl.IndexOf('/')];
-                }
-            }
-            else
-            {
-                Console.WriteLine($"{Tag} input is not an instagram post");
-                return;
-            }
-
-            PostId = postUrl;
-
-            // TODO replace with profile name
-            MTitle = PostId;
-
-            // init webview + client
 
             Services.Start();
         }
@@ -1049,11 +1060,14 @@ namespace InstaLoaderMaui
         {
             private static readonly string Tag = nameof(MWebViewClient);
 
-            // TODO track cookie for login session (USER?)
-
             public override void OnPageFinished(Android.Webkit.WebView? view, string? url)
             {
                 Console.WriteLine($"{Tag} OnPageFinished url={url}");
+
+                // get cookies
+                MCookies = CookieManager.Instance.GetCookie(url);
+                Console.WriteLine($"{Tag} MCookies={MCookies}");
+
                 base.OnPageFinished(view, url);
             }
 

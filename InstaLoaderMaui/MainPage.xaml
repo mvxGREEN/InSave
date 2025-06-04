@@ -85,11 +85,16 @@
                             Margin="-20"
                             Opacity="0.0"/>
                         <!-- WEBVIEW -->
-                        <WebView x:Name="preview_webview"
-                            AbsoluteLayout.LayoutBounds="0,0,1,460"
-                            AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
-                            IsVisible="True"
-                            IsEnabled="True"/>
+                        <ScrollView HorizontalScrollBarVisibility="Never">
+                            <Grid>
+                                <WebView x:Name="preview_webview"
+                                    AbsoluteLayout.LayoutBounds="0,0,1,460"
+                                    AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
+                                    IsVisible="False"
+                                    IsEnabled="False"/>
+                            </Grid>
+                        </ScrollView>
+                        
                     </Frame>
                     
                     <!-- PROGRESS -->
