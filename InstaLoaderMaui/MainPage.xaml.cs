@@ -4,10 +4,7 @@ using MPowerKit.ProgressRing;
 using Firebase;
 using Microsoft.Maui.Handlers;
 using Android.Webkit;
-using Android.Text;
-using Android.Gms.Common.Util.Wrappers;
-
-
+using Android.App;
 
 
 #if ANDROID
@@ -38,7 +35,7 @@ namespace InstaLoaderMaui
         public static string AbsPathDocsTemp = "";
         public static string MInput = "";
         public static string IgId = "";
-        public static string MCookies = "";
+        public static string MCookies = Preferences.Default.Get("COOKIES", "");
         public static bool MIsAlreadyLoading = false;
         public static List<string> MDownloadUrls = new List<string>();
 
@@ -321,6 +318,7 @@ namespace InstaLoaderMaui
             MainPage mp = (MainPage)Shell.Current.CurrentPage;
             MainPage.MFailedShowInter = false;
             MIsAlreadyLoading = false;
+            MDownloadUrls = new List<string>();
             mp.MThumbnailUrl = "";
             mp.MTitle = "";
             mp.MArtist = "";
@@ -360,7 +358,9 @@ namespace InstaLoaderMaui
 
             // init webview
             var pmv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
-            pmv.UserAgent = UA_DESKTOP_CHROME;
+            pmv.IsEnabled = false;
+            pmv.IsVisible = false;
+            //((IWebViewHandler)pwv.Handler).PlatformView.Settings.UserAgentString = UA_DESKTOP_CHROME;
             //ModifyWebView();
 
             // hide buttons
@@ -451,7 +451,7 @@ namespace InstaLoaderMaui
 
         public async Task ShowPreviewUI()
         {
-            Console.WriteLine($"{Tag}: ShowPreviewUI");
+            Console.WriteLine($"{Tag}: ShowPreviewUI MThumbnailUrl={MThumbnailUrl}");
 
             /* destroy webview
             if (null != pwv)
@@ -779,9 +779,32 @@ namespace InstaLoaderMaui
         {
             ShowDownloadingUI();
 
-            // download input
-            var input = main_textfield.Text?.Trim();
-            DownloadPost(input);
+            // register finish reciever
+            MainActivity ma = (MainActivity)Platform.CurrentActivity;
+            if ((int)Build.VERSION.SdkInt >= 33)
+            {
+                ma.RegisterReceiver(MainActivity.MFinishReceiver, new IntentFilter("69"), ReceiverFlags.Exported);
+                ma.RegisterReceiver(MainActivity.MDownloadReceiver, new IntentFilter(DownloadManager.ActionDownloadComplete), ReceiverFlags.Exported);
+            }
+            else
+            {
+                ma.RegisterReceiver(MainActivity.MFinishReceiver, new IntentFilter("69"));
+                ma.RegisterReceiver(MainActivity.MDownloadReceiver, new IntentFilter(DownloadManager.ActionDownloadComplete));
+            }
+
+            if (MDownloadUrls.Count > 0) {
+                // download private media
+                for (int i = 0; i < MDownloadUrls.Count; i++)
+                {
+                    Task.Delay(100).Wait();
+                    await DownloadUrl(MDownloadUrls[i], i);
+                }
+            } else
+            {
+                // download public media
+                var input = main_textfield.Text?.Trim();
+                DownloadPost(input);
+            }
         }
 
         private void OnTextChanged(object sender, Microsoft.Maui.Controls.TextChangedEventArgs e)
@@ -970,7 +993,7 @@ namespace InstaLoaderMaui
                             {
                                 ((IWebViewHandler)pwv.Handler).PlatformView
                                 .LoadUrl("https://www.instagram.com/accounts/login/?hl=en");
-                                // https://www.instagram.com/?flo=true
+                                // alt: https://www.instagram.com/?flo=true
                             });
                         });
                     }
@@ -992,6 +1015,27 @@ namespace InstaLoaderMaui
             
         }
 
+        private static async Task DownloadUrl(string url, int index)
+        {
+            DownloadManager downloadManager = (DownloadManager)
+                    MainActivity.ActivityCurrent.GetSystemService(Context.DownloadService);
+            Android.Net.Uri fileUri = Android.Net.Uri.Parse(url);
+            string fileDir = Android.OS.Environment.DirectoryDocuments;
+            string fileExt = ".jpg";
+            if (url.Contains(".mp4"))
+                fileExt = ".mp4";
+            string fileName = ((MainPage)Shell.Current.CurrentPage).MTitle + "_" + index + fileExt;
+
+            Console.WriteLine($"{Tag} targetUrl={url} fileName={fileName}");
+
+            DownloadManager.Request request = new DownloadManager.Request(fileUri);
+            request.SetTitle("instaloader");
+            request.SetDescription("");
+            request.SetDestinationInExternalPublicDir(
+                fileDir, fileName);
+            downloadManager.Enqueue(request);
+        }
+
         
         private void DownloadProfile(string postUrl)
         {
@@ -1001,17 +1045,6 @@ namespace InstaLoaderMaui
         private void DownloadPost(string postUrl)
         {
             Console.WriteLine($"{Tag} DownloadPost postUrl={postUrl}");
-
-            // register finish reciever
-            MainActivity ma = (MainActivity)Platform.CurrentActivity;
-            if ((int)Build.VERSION.SdkInt >= 33)
-            {
-                ma.RegisterReceiver(MainActivity.MFinishReceiver, new IntentFilter("69"), ReceiverFlags.Exported);
-            }
-            else
-            {
-                ma.RegisterReceiver(MainActivity.MFinishReceiver, new IntentFilter("69"));
-            }
 
             Services.Start();
         }
@@ -1110,8 +1143,9 @@ namespace InstaLoaderMaui
             {
                 Console.WriteLine($"{Tag} OnPageFinished url={url}");
 
-                // get cookies
+                // save cookies
                 MCookies = CookieManager.Instance.GetCookie(url);
+                Preferences.Default.Set("COOKIES", MCookies);
                 Console.WriteLine($"{Tag} MCookies={MCookies}");
 
                 if (!url.Contains("instagram.com/?"))
@@ -1135,7 +1169,7 @@ namespace InstaLoaderMaui
                         }
 
                         // extract download urls
-                        List<String> MDownloadUrls = ExtractUrlsFromHtml(res);
+                        MDownloadUrls = ExtractUrlsFromHtml(res);
                         foreach (string url in MDownloadUrls)
                         {
                             Console.WriteLine($"{Tag} found content url: {url}");
@@ -1150,8 +1184,6 @@ namespace InstaLoaderMaui
                         pmv.IsEnabled = false;
                         ((MainPage)Shell.Current.CurrentPage).ShowPreviewUI();
                     });
-                    
-
 
                 }
 

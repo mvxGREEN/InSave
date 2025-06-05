@@ -17,6 +17,7 @@ using Plugin.MauiMTAdmob.Controls;
 using static InstaLoaderMaui.MainPage;
 using Firebase.Analytics;
 using Android.Net.Wifi.Aware;
+using MPowerKit.ProgressRing;
 
 namespace InstaLoaderMaui;
 
@@ -32,6 +33,7 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
     private static string Tag = nameof(MainActivity);
 
     public static FinishReceiver MFinishReceiver = new();
+    public static DownloadReceiver MDownloadReceiver = new();
 
     public BillingClient MBillingClient;
     public BillingFlowParams MBillingFlowParams;
@@ -674,6 +676,60 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
                 .Build();
 
         MBillingClient.AcknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener());
+    }
+
+    // DOWNLOAD RECEIVER
+    [BroadcastReceiver(Enabled = true, Exported = false)]
+    public class DownloadReceiver : BroadcastReceiver
+    {
+        private static readonly string Tag = nameof(DownloadReceiver);
+        private static int MCount = 0;
+
+        public override void OnReceive(Context context, Intent intent)
+        {
+            Console.WriteLine($"{Tag} OnReceive MCount={++MCount} MainPage.MDownloadUrls.Count={MainPage.MDownloadUrls.Count}");
+            MainPage mp = ((MainPage)Shell.Current.CurrentPage);
+            string action = intent.Action;
+            if (DownloadManager.ActionDownloadComplete.Equals(action))
+            {
+                Console.WriteLine($"{Tag} download complete.");
+                if (MCount == MainPage.MDownloadUrls.Count)
+                {
+                    // update progress
+                    ProgressRing pr = ((ProgressRing)mp.FindByName("progress_ring"));
+                    double progress = MCount / (double)MainPage.MDownloadUrls.Count;
+                    int percent = (int)(progress * 100.0);
+                    pr.Progress = progress;
+                    pr.IsIndeterminate = false;
+
+                    // send finish broadcast
+                    MainActivity.ActivityCurrent.SendBroadcast(new Intent("69"));
+
+                    // unregister self
+                    Console.WriteLine($"{Tag} unregistering self");
+                    try
+                    {
+                        context.UnregisterReceiver(this);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"{Tag} already unregistered");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"{Tag} image downloaded");
+
+                    // update progress
+                    ProgressRing pr = ((ProgressRing)mp.FindByName("progress_ring"));
+                    double progress = MCount / (double)MainPage.MDownloadUrls.Count;
+                    int percent = (int)(progress * 100.0);
+                    pr.Progress = progress;
+                    pr.IsIndeterminate = false;
+
+                }
+            }
+        }
     }
 
     // BROADCAST RECEIVER
