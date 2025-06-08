@@ -11,6 +11,7 @@
 
     <!-- TOOLBAR -->
     <ContentPage.ToolbarItems>
+        <!-- TODO put back upgrade icon
         <ToolbarItem x:Name="upgrade_item"
                  Text="Upgrade"
                  Clicked="OnUpgradeClicked"
@@ -26,6 +27,7 @@
              Order="Secondary"
              Text="Upgrade"
              Clicked="OnUpgradeClicked" />
+        -->
         <ToolbarItem x:Name="rate_item"
              Order="Secondary"
              Text="Rate"

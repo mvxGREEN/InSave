@@ -8,7 +8,7 @@
     Title="InstaLoaderMaui">
 
     <ShellContent
-        Title="Home"
+        Title="InstaLoader"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

@@ -6,16 +6,16 @@ using Microsoft.Maui.Handlers;
 using Android.Webkit;
 using Android.App;
 using Android.Text;
+using Android.Util;
 
+using Plugin.MauiMTAdmob;
 
-#if ANDROID
 using Android.Content;
 using Android.Views.InputMethods;
 using Android.OS;
 using AndroidHUD;
 using Firebase.Analytics;
 using Green.Mobileapps.Instaloader;
-#endif
 
 namespace InstaLoaderMaui
 {
@@ -35,6 +35,7 @@ namespace InstaLoaderMaui
         public static string AbsPathDocs = "";
         public static string AbsPathDocsTemp = "";
         public static string MInput = "";
+        public static bool MInputIsProfile = false;
         public static string IgId = "";
         public static string MCookies = Preferences.Default.Get("COOKIES", "");
         public static bool MIsAlreadyLoading = false;
@@ -262,14 +263,14 @@ namespace InstaLoaderMaui
             MIsNotGold = !Preferences.Default.Get("IS_GOLD", false);
             Console.WriteLine($"{Tag}, IS_GOLD={!MIsNotGold}");
 
-#if ANDROID
+
             // init firebase
             FirebaseApp.InitializeApp(MainActivity.ActivityCurrent);
             // FirebaseAnalytics.GetInstance(MainActivity.ActivityCurrent);
 
             // init admob
             MainActivity.ActivityCurrent.LoadAdmob();
-#endif
+
 
             // prepare destination file dirs
             PrepareFileDirs();
@@ -279,14 +280,14 @@ namespace InstaLoaderMaui
         {
             base.OnDisappearing();
 
-#if ANDROID
+
             if (null != pwv)
             {
                 ((IWebViewHandler)pwv.Handler).PlatformView.SetWebViewClient(null);
                 ((IWebViewHandler)pwv.Handler).PlatformView.Destroy();
                 pwv = null;
             }
-#endif
+
         }
 
         public static void PrepareFileDirs()
@@ -390,12 +391,10 @@ namespace InstaLoaderMaui
             MMessageProgress = "Loading…";
 
             // show interstitial if not gold
-#if ANDROID
+
             if (MIsNotGold)
             {
-                // check if interstitial is loaded
-                // TODO
-                /* bool IsInterLoaded = CrossMauiMTAdmob.Current.IsInterstitialLoaded();
+                bool IsInterLoaded = CrossMauiMTAdmob.Current.IsInterstitialLoaded();
 
 
                 // show or load interstitial
@@ -416,8 +415,11 @@ namespace InstaLoaderMaui
                         Console.WriteLine($"{Tag} failed to log event: {e.Message}");
                     }
 
-                    CrossMauiMTAdmob.Current.ShowInterstitial();
-                
+                    // show interstitial once every four runs
+                    if (((successfulRuns+1) % 4) == 0)
+                    {
+                        CrossMauiMTAdmob.Current.ShowInterstitial();
+                    }
                 }
                 else
                 {
@@ -425,7 +427,7 @@ namespace InstaLoaderMaui
 
                     MFailedShowInter = true;
 
-                    // log event
+                    /* log event
                     try
                     {
                         Bundle bundle = new Bundle();
@@ -438,12 +440,12 @@ namespace InstaLoaderMaui
                     {
                         Console.WriteLine($"{Tag} failed to log event");
                     }
+                    */
                 }
                 // load next interstitial
                 CrossMauiMTAdmob.Current.LoadInterstitial(admobIdInter);
-                */
             }
-#endif
+
 
             // show indeterminate progress ring
             ProgressRing pr = (ProgressRing)FindByName("progress_ring");
@@ -481,10 +483,7 @@ namespace InstaLoaderMaui
         {
             Console.WriteLine($"{Tag}: ShowDownloadingUI");
 
-#if ANDROID
-            // TODO 
-            /*
-            // retry showing interstitial, if necessary
+
             if (MFailedShowInter)
             {
                 // show or load interstitial
@@ -530,8 +529,6 @@ namespace InstaLoaderMaui
                     Console.WriteLine($"{Tag} failed to log event");
                 }
             }
-            */
-#endif
 
             // change progress message
             MMessageProgress = "Downloading…";
@@ -577,9 +574,9 @@ namespace InstaLoaderMaui
 
             // show success message
             MMessageToast = $"Saved! In {AbsPathDocs}";
-#if ANDROID
+
             AndHUD.Shared.ShowSuccess(MainActivity.ActivityCurrent, MMessageToast, MaskType.Black, TimeSpan.FromMilliseconds(2500));
-#endif
+
 
             ProgressRing prd = (ProgressRing)FindByName("progress_ring_dlr");
             ButtonView finishBtn = (ButtonView)FindByName("finish_btn");
@@ -597,7 +594,7 @@ namespace InstaLoaderMaui
         }
         public void HideKeyboard()
         {
-#if ANDROID
+
             // hide keyboard
             var inputMethodManager = MainActivity.ActivityCurrent.GetSystemService(Context.InputMethodService) as InputMethodManager;
             if (inputMethodManager != null && MainActivity.ActivityCurrent is Android.App.Activity)
@@ -608,7 +605,7 @@ namespace InstaLoaderMaui
 
                 activity.Window.DecorView.ClearFocus();
             }
-#endif
+
         }
 
         private void OnAboutClicked(object sender, EventArgs e)
@@ -700,7 +697,7 @@ namespace InstaLoaderMaui
             else if (title == "Help")
             {
                 MFragmentSubtitle = "How to Use InstaLoader";
-                MFragmentBody = "➊  Copy an Instagram track link\n    ⓘ  \"Share\" > \"Copy link\"\n➋  Tap ⚡ (or paste link into search bar)\n➌  Tap ⬇ when finished loading\n    ⓘ  Downloaded files are in documents folder";
+                MFragmentBody = "➊  Copy an Instagram link\n    ⓘ  \"Share\" > \"Copy link\"\n➋  Tap ⚡ (or paste link into search bar)\n➌  Tap ⬇ when finished loading\n    ⓘ  Downloaded files are in documents folder";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
                 ((HorizontalStackLayout)FindByName("fragment_btn_layout")).IsVisible = false;
             }
@@ -785,20 +782,11 @@ namespace InstaLoaderMaui
 
             Task.Run(async () =>
             {
-                if (MDownloadUrls.Count > 0)
+                // download private media
+                for (int i = 0; i < MDownloadUrls.Count; i++)
                 {
-                    // download private media
-                    for (int i = 0; i < MDownloadUrls.Count; i++)
-                    {
-                        Task.Delay(333).Wait();
-                        await DownloadUrl(MDownloadUrls[i], i);
-                    }
-                }
-                else
-                {
-                    // download public media
-                    var input = main_textfield.Text?.Trim();
-                    DownloadPost(input);
+                    Task.Delay(333).Wait();
+                    await DownloadUrl(MDownloadUrls[i], i);
                 }
             });
         }
@@ -866,9 +854,7 @@ namespace InstaLoaderMaui
             {
                 MMessageToast = "Please connect to the internet.";
                 Console.WriteLine($"{Tag} {MMessageToast}");
-#if ANDROID
                 AndHUD.Shared.ShowError(MainActivity.ActivityCurrent, MMessageToast, MaskType.Black, TimeSpan.FromSeconds(2));
-#endif
                 return;
             }
 
@@ -948,26 +934,22 @@ namespace InstaLoaderMaui
             if (input.Contains("instagram.com/p/"))
             {
                 Console.WriteLine($"{Tag} input is an instagram post");
-
-                // load post
+                MInputIsProfile = false;
             }
             else if (input.Contains("instagram.com/reel/"))
             {
                 Console.WriteLine($"{Tag} input is an instagram reel");
-
-
+                MInputIsProfile = false;
             }
             else if (input.Contains("instagram.com/s/"))
             {
                 Console.WriteLine($"{Tag} input is an instagram story");
-
-
+                MInputIsProfile = false;
             }
             else 
             {
                 Console.WriteLine($"{Tag} input is an instagram profile");
-
-
+                MInputIsProfile = true;
             }
 
 
@@ -978,9 +960,6 @@ namespace InstaLoaderMaui
                     // get thumbnail
                     MThumbnailUrl = await ExtractThumbnailUrl(input);
                     Console.WriteLine($"{Tag} gotten thumbnail MThumbnailUrl={MThumbnailUrl}");
-
-                    Console.WriteLine($"{Tag} post is private or not found");
-                    MMessageToast = "Post not found or private.";
 
                     // show login page in webview
                     MainThread.BeginInvokeOnMainThread(() =>
