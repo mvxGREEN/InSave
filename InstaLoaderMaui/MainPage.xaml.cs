@@ -5,6 +5,8 @@ using Firebase;
 using Microsoft.Maui.Handlers;
 using Android.Webkit;
 using Android.App;
+using Android.Text;
+
 
 #if ANDROID
 using Android.Content;
@@ -358,7 +360,7 @@ namespace InstaLoaderMaui
 
             // init webview
             var pmv = (Microsoft.Maui.Controls.WebView)FindByName("preview_webview");
-            pmv.IsEnabled = false;
+            //pmv.IsEnabled = false;
             pmv.IsVisible = false;
 
             // set width cookie
@@ -406,7 +408,7 @@ namespace InstaLoaderMaui
                         Bundle b = new Bundle();
                         b.PutString("admob", "show_interstitial");
                         b.PutBoolean("is_loaded", IsInterLoaded);
-                        b.PutString("app_name", "soundloader");
+                        b.PutString("app_name", "instaloader");
                         FirebaseAnalytics.GetInstance((MainActivity)Platform.CurrentActivity).LogEvent("admob_show_inter", b);
                     }
                     catch (Exception e)
@@ -428,9 +430,8 @@ namespace InstaLoaderMaui
                     {
                         Bundle bundle = new Bundle();
                         bundle.PutString("admob", "failed_show");
-                        bundle.PutString("app_name", "soundloader");
                         bundle.PutString("ad_type", "interstitial");
-                        bundle.PutString("app_name", "soundloader");
+                        bundle.PutString("app_name", "instaloader");
                         FirebaseAnalytics.GetInstance((MainActivity)Platform.CurrentActivity).LogEvent("admob_failed_show", bundle);
                     }
                     catch (Exception)
@@ -497,7 +498,7 @@ namespace InstaLoaderMaui
                         Bundle b = new Bundle();
                         b.PutString("admob", "show_interstitial");
                         b.PutBoolean("is_loaded", true);
-                        b.PutString("app_name", "soundloader");
+                        b.PutString("app_name", "instaloader");
                         FirebaseAnalytics.GetInstance((MainActivity)Platform.CurrentActivity).LogEvent("admob_show_inter", b);
                     }
                     catch (Exception e)
@@ -519,10 +520,9 @@ namespace InstaLoaderMaui
                 {
                     Bundle bundle = new Bundle();
                     bundle.PutString("admob", "failed_show");
-                    bundle.PutString("app_name", "soundloader");
                     bundle.PutBoolean("is_loaded", false);
                     bundle.PutString("ad_type", "interstitial");
-                    bundle.PutString("app_name", "soundloader");
+                    bundle.PutString("app_name", "instaloader");
                     FirebaseAnalytics.GetInstance((MainActivity)Platform.CurrentActivity).LogEvent("admob_failed_show", bundle);
                 }
                 catch (Exception)
@@ -675,7 +675,7 @@ namespace InstaLoaderMaui
 
 #if ANDROID
             // open listing on google play
-            var playStoreUrl = "https://play.google.com/store/apps/details?id=com.mvxgreen.downloader4soundcloud"; //Add here the url of your application on the store
+            var playStoreUrl = "https://play.google.com/store/apps/details?id=green.mobileapps.instaloader"; //Add here the url of your application on the store
             Intent intent = new Intent(Intent.ActionView, Android.Net.Uri.Parse(playStoreUrl));
             //intent.SetPackage("com.android.vending");
             MainActivity.ActivityCurrent.StartActivity(intent);
@@ -690,8 +690,8 @@ namespace InstaLoaderMaui
             MFragmentTitle = title;
             if (title == "Upgrade")
             {
-                MFragmentSubtitle = "SoundLoader Gold";
-                MFragmentBody = "✅  Playlists\n✅  Albums\n✅  Fastest download speed\n✅  No more ads!";
+                MFragmentSubtitle = "InstaLoader Gold";
+                MFragmentBody = "✅  Profiless✅  Fastest download speed\n✅  No more ads!";
                 MFragmentPositive = "Get It!";
                 MFragmentDismiss = "Nah";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.5;
@@ -699,14 +699,14 @@ namespace InstaLoaderMaui
             }
             else if (title == "Help")
             {
-                MFragmentSubtitle = "How to Use SoundLoader";
-                MFragmentBody = "➊  Copy a SoundCloud track link\n    ⓘ  Open track > \"Share\" > \"Copy link\"\n➋  Tap ⚡ (or paste link into searchbar)\n➌  Tap ⬇ when finished loading\n    ⓘ  Downloads in documents folder";
+                MFragmentSubtitle = "How to Use InstaLoader";
+                MFragmentBody = "➊  Copy an Instagram track link\n    ⓘ  \"Share\" > \"Copy link\"\n➋  Tap ⚡ (or paste link into search bar)\n➌  Tap ⬇ when finished loading\n    ⓘ  Downloaded files are in documents folder";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
                 ((HorizontalStackLayout)FindByName("fragment_btn_layout")).IsVisible = false;
             }
             else if (title == "Rate")
             {
-                MFragmentSubtitle = "SoundLoader";
+                MFragmentSubtitle = "InstaLoader";
                 MFragmentBody = "Enjoying the app?\nLet me know!";
                 MFragmentPositive = "Rate";
                 MFragmentDismiss = "Nah";
@@ -715,7 +715,7 @@ namespace InstaLoaderMaui
             }
 
             // show fragment
-            Microsoft.Maui.Controls.AbsoluteLayout fragment = (Microsoft.Maui.Controls.AbsoluteLayout)FindByName("fragment_layout");
+            AbsoluteLayout fragment = (AbsoluteLayout)FindByName("fragment_layout");
             fragment.Opacity = 0.0;
             fragment.IsVisible = true;
             fragment.FadeTo(1.0, ANIM_LENGTH);
@@ -916,7 +916,7 @@ namespace InstaLoaderMaui
                 bundle.PutBoolean("input_valid", true);
                 bundle.PutString("input_text", input);
                 bundle.PutString("input_domain", domain);
-                bundle.PutString("app_name", "soundloader");
+                bundle.PutString("app_name", "instaloader");
                 FirebaseAnalytics.GetInstance((MainActivity)Platform.CurrentActivity).LogEvent("input_load", bundle);
             }
             catch (Exception e)
@@ -1084,7 +1084,7 @@ namespace InstaLoaderMaui
             Services.Start();
         }
 
-        private async Task<string?> ExtractThumbnailUrl(string inputUrl)
+        private static async Task<string?> ExtractThumbnailUrl(string inputUrl)
         {
             Console.WriteLine($"{Tag} ExtractThumbnailUrl url={inputUrl}");
             
@@ -1092,8 +1092,14 @@ namespace InstaLoaderMaui
             using var httpClient = new HttpClient();
             var html = await httpClient.GetStringAsync(inputUrl);
 
+            if (html == null || html.Length == 0) {
+                Console.WriteLine($"{Tag} empty html!");
+                return "";
+            }
+
             // print html
             IEnumerable<string> htmlChunks = Split(html, 3500);
+
             Console.WriteLine($"{Tag} MAIN HTML:");
             foreach (string v in htmlChunks)
             {
@@ -1209,6 +1215,7 @@ namespace InstaLoaderMaui
                 // set width cookie
                 CookieManager.Instance.SetCookie("https://www.instagram.com/?hl=en", "wd=1680x881");
                 CookieManager.Instance.SetCookie(MInput, "wd=1680x881");
+                Console.WriteLine($"{Tag} adjusted width MCookies={MCookies}");
 
                 /*
                  // show webview if story
@@ -1219,26 +1226,48 @@ namespace InstaLoaderMaui
                 }
                  */
 
-                if (url.Contains("instagram.com/accounts/login") || url.Contains(MInput))
+                if (url.Contains(".com/accounts/login"))
                 {
-                    MainThread.BeginInvokeOnMainThread(async () =>
-                    {
-                        // get html via javascript
-                        var pmv = (Microsoft.Maui.Controls.WebView)((MainPage)Shell.Current.CurrentPage).FindByName("preview_webview");
-                        pmv.IsVisible = true;
-                    });
+                    Console.WriteLine($"{Tag} hiding progress & image...");
+                    MainPage mp = (MainPage)Shell.Current.CurrentPage;
+                    var pmv = (Microsoft.Maui.Controls.WebView)mp.FindByName("preview_webview");
+
+                    // scroll to bottom
+                    pmv.EvaluateJavaScriptAsync("(function() { window.scrollTo(0, document.body.scrollHeight); })();");
+
+                    // hide progress ring & preview image
+                    ProgressRing pr = (ProgressRing)mp.FindByName("progress_ring");
+                    Image previewImg = (Image)mp.FindByName("preview_img");
+                    Label pl = (Label)mp.FindByName("progress_label");
+                    pr.IsVisible = false;
+                    pl.IsVisible = false;
+                    previewImg.IsVisible = false;
+                    // show webview
+                    Console.WriteLine($"{Tag} showing webview...");
+                    Microsoft.Maui.Controls.WebView pwv = (Microsoft.Maui.Controls.WebView)mp.FindByName("preview_webview");
+                    pwv.IsVisible = true;
                 }
 
-                if (!url.Contains("instagram.com/accounts/login") && !url.Contains("instagram.com/?"))
+                
+
+                if (!url.Contains(".com/accounts/login") && !url.Contains("instagram.com/?"))
                 {
-                    Console.WriteLine($"{Tag} finished loading private page url={url} MIsAlreadyLoading={MIsAlreadyLoading}");
+                    Console.WriteLine($"{Tag} finished loading content page url={url} MIsAlreadyLoading={MIsAlreadyLoading}");
+                    Console.WriteLine($"{Tag} hiding webview...");
+                    MainPage mp = (MainPage)Shell.Current.CurrentPage;
+                    var pmv = (Microsoft.Maui.Controls.WebView)mp.FindByName("preview_webview");
 
                     // remove self from webview when finished
                     MainThread.BeginInvokeOnMainThread(async () =>
                     {
-                        // get html via javascript
-                        var pmv = (Microsoft.Maui.Controls.WebView)((MainPage)Shell.Current.CurrentPage).FindByName("preview_webview");
+                        // get html with javascript
                         var res = await ((Microsoft.Maui.Controls.WebView)pmv).EvaluateJavaScriptAsync("(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();");
+
+                        if (res == null || res.Length == 0)
+                        {
+                            Console.WriteLine($"{Tag} empty js html!");
+                            return;
+                        }
 
                         // print html
                         IEnumerable<string> htmlChunks = Split(res, 3500);
@@ -1256,16 +1285,30 @@ namespace InstaLoaderMaui
                             Console.WriteLine($"{Tag} found content url: {url}");
                         }
 
+                        // return if empty
+                        if (MDownloadUrls == null || MDownloadUrls.Count == 0)
+                        {
+                            return;
+                        }
+
+                        // hide webview
+                        pmv.IsVisible = false;
+                        // show progress ring & preview image
+                        ProgressRing pr = (ProgressRing)mp.FindByName("progress_ring");
+                        Image previewImg = (Image)mp.FindByName("preview_img");
+                        pr.IsVisible = true;
+                        previewImg.IsVisible = true;
+
                         // update ui
                         ((MainPage)Shell.Current.CurrentPage).MThumbnailUrl = MDownloadUrls.FirstOrDefault();
                         //((MainPage)Shell.Current.CurrentPage).MTitle = 
 
-                        
                         ((IWebViewHandler)pmv.Handler).PlatformView.SetWebViewClient(null);
                         pmv.IsVisible = false;
                         pmv.IsEnabled = false;
                         ((MainPage)Shell.Current.CurrentPage).ShowPreviewUI();
                     });
+
 
                 }
 

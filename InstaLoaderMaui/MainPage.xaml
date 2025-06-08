@@ -39,7 +39,7 @@
     <AbsoluteLayout>
         <ScrollView AbsoluteLayout.LayoutBounds="0,0,1,1"
                 AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional">
-            <VerticalStackLayout Padding="20,20" Spacing="20">
+            <VerticalStackLayout Padding="20,0,20,0" Spacing="20">
                 <!-- TEXTFIELD -->
                 <material:TextField x:Name="main_textfield"
                             Title="Paste URL…"
@@ -72,31 +72,29 @@
                         BorderColor="{AppThemeBinding Dark={StaticResource PointEight}, Light={StaticResource DarkPointEight}}"
                         BackgroundColor="{StaticResource PointOh}"
                         CornerRadius="10"
+                        Padding="-10"
                         ZIndex="1"
                         AbsoluteLayout.LayoutBounds="0,0,1,360"
                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional">
-                        <StackLayout>
+                        <VerticalStackLayout>
                             <!-- THUMBNAIL -->
                             <Image x:Name="preview_img"
                                 Source="{Binding MThumbnailUrl}"
                                 BackgroundColor="{StaticResource PointOh}"
                                 Aspect="AspectFill"
                                 ZIndex="1"
-                                Margin="-20"
                                 Opacity="0.0"/>
-                            <!-- WEBVIEW -->
-                            <ScrollView HorizontalScrollBarVisibility="Never">
+                            <ScrollView HorizontalScrollBarVisibility="Never"
+                                        HeightRequest="380">
                                 <Grid>
                                     <WebView x:Name="preview_webview"
-                                        AbsoluteLayout.LayoutBounds="0,0,1,360"
-                                        AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
-                                        IsVisible="False"
-                                        IsEnabled="True"/>
+                                    IsVisible="False"
+                                    IsEnabled="False"/>
                                 </Grid>
                             </ScrollView>
-                        </StackLayout>
+                        </VerticalStackLayout>
                     </Frame>
-                    
+
                     <!-- PROGRESS -->
                     <VerticalStackLayout AbsoluteLayout.LayoutBounds="0.5,0.5,1,100"
                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional">
@@ -134,7 +132,7 @@
                         CornerRadius="10"
                         ZIndex="1"
                         Opacity="0"
-                        AbsoluteLayout.LayoutBounds="0,0,1,95"
+                        AbsoluteLayout.LayoutBounds="0,0,1,90"
                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional">
                         <StackLayout Orientation="Horizontal"
                             Spacing="10">
@@ -142,6 +140,7 @@
                             <material:ButtonView x:Name="dl_btn"
                                 WidthRequest="60"
                                 HeightRequest="60"
+                                Padding="5"
                                 Opacity="0.0">
                                 <ImageButton 
                                     Clicked="OnDownloadClicked">
@@ -165,6 +164,7 @@
                             <material:ButtonView x:Name="finish_btn"
                                 WidthRequest="60"
                                 HeightRequest="60"
+                                Padding="5"
                                 Opacity="0.0"
                                 IsVisible="False">
                                 <ImageButton>
@@ -175,24 +175,18 @@
                                     </ImageButton.Source>
                                 </ImageButton>
                             </material:ButtonView>
-                            <VerticalStackLayout VerticalOptions="Center">
+                            <StackLayout VerticalOptions="Center">
                                 <!-- TITLE -->
                                 <Label x:Name="preview_title"
                                     Text="{Binding MTitle}"
-                                    FontSize="Medium"
+                                    FontSize="Large"
                                     TextColor="{AppThemeBinding Dark={StaticResource White}, Light={StaticResource Black}}"
+                                    Margin="5,0,0,0"
                                     WidthRequest="250"
+                                    MaxLines="1"
                                     VerticalTextAlignment="Center"
                                     ZIndex="2" />
-                                <!-- ARTIST -->
-                                <Label x:Name="preview_artist"
-                                    Text="{Binding MArtist}"
-                                    FontSize="Medium"
-                                    TextColor="{AppThemeBinding Dark={StaticResource PointEightFive}, Light={StaticResource DarkPointEightFive}}"
-                                    WidthRequest="250"
-                                    VerticalTextAlignment="Center"
-                                    ZIndex="2" />
-                            </VerticalStackLayout>
+                            </StackLayout>
                         </StackLayout>
                     </Frame>
                 </AbsoluteLayout>
@@ -226,10 +220,10 @@
                  AbsoluteLayout.LayoutBounds="0,0,1,400"
                  AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional">
                 <Grid>
-                    <VerticalStackLayout>
+                    <StackLayout>
                         <!-- HEADER -->
                         <Grid>
-                            <VerticalStackLayout HorizontalOptions="Start">
+                            <StackLayout HorizontalOptions="Start">
                                 <!-- TITLE -->
                                 <Label x:Name="fragment_title"
                                      Text="{Binding MFragmentTitle}"
@@ -246,13 +240,13 @@
                                      Margin="10,0,0,0"
                                      VerticalTextAlignment="Start"
                                      ZIndex="2" />
-                            </VerticalStackLayout>
+                            </StackLayout>
                             <!-- CLOSE -->
                             <material:ButtonView>
                                 <ImageButton x:Name="close_button"
                                      Clicked="OnCloseClicked"
-                                     HeightRequest="20"
-                                     WidthRequest="20"
+                                     HeightRequest="32"
+                                     WidthRequest="32"
                                      VerticalOptions="Start"
                                      HorizontalOptions="End">
                                     <ImageButton.Source>
@@ -273,7 +267,7 @@
                              VerticalTextAlignment="Start"
                              ZIndex="2"
                              LineHeight="1.5"/>
-                    </VerticalStackLayout>
+                    </StackLayout>
 
                     <!-- BUTTONS -->
                     <HorizontalStackLayout x:Name="fragment_btn_layout"

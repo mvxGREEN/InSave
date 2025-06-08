@@ -1,5 +1,4 @@
-﻿using Android.Nfc;
-
+﻿
 namespace InstaLoaderMaui
 {
     public partial class App : Application
@@ -15,6 +14,7 @@ namespace InstaLoaderMaui
         {
             Console.WriteLine($"{Tag}: CreateWindow");
             //return new Window(new AppShell());
+            
             return base.CreateWindow(activationState);
         }
     }
