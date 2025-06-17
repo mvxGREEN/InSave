@@ -440,18 +440,22 @@ namespace InstaLoaderMaui
                 runs += Preferences.Default.Get("SUCCESSFUL_RUNS", 0);
             }
             successfulRuns = runs;
+
+            // set in prefs
             Preferences.Default.Set("SUCCESSFUL_RUNS", runs);
             Console.WriteLine($"{Tag} SUCCESSFUL_RUNS={runs}");
 
-            // sometimes show dialog
-            if (MIsNotGold && (successfulRuns % 4 == 0))
+            // sometimes show popup fragment
+            int cycle = successfulRuns % 6;
+            if (MIsNotGold && (cycle == 0))
             {
-                // show rate
                 OpenFragment("Rate");
-            } else if (MIsNotGold && (successfulRuns % 4 == 2))
+            } else if (MIsNotGold && (cycle == 2))
             {
-                // show upgrade
                 OpenFragment("Upgrade");
+            } else if (MIsNotGold && (cycle == 4))
+            {
+                OpenFragment("VscoLoader");
             }
 
             // show success message
