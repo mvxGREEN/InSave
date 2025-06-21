@@ -68,6 +68,8 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
 
         LoadBillingClient();
 
+        await Task.Delay(400);
+
         // look for intent data
         Intent intent = this.Intent;
         if (intent != null)

@@ -598,7 +598,7 @@ namespace InstaLoaderMaui
             {
                 MFragmentSubtitle = "InstaLoader Gold";
                 MFragmentBody = "✅  Profiles\n✅  Collections\n✅  Batch downloads\n✅  No more ads!";
-                MFragmentPositive = "Get It!";
+                MFragmentPositive = "Coming Soon";
                 MFragmentDismiss = "Nah";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.5;
                 ((HorizontalStackLayout)FindByName("fragment_btn_layout")).IsVisible = true;
