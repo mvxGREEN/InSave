@@ -17,10 +17,11 @@ using Plugin.MauiMTAdmob.Controls;
 using static InstaLoaderMaui.MainPage;
 using Firebase.Analytics;
 using MPowerKit.ProgressRing;
+using AndroidX.Activity;
 
 namespace InstaLoaderMaui;
 
-[Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, Exported = true, LaunchMode = LaunchMode.SingleInstance, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+[Activity(Theme = "@style/MainTheme.NoActionBar", MainLauncher = true, Exported = true, LaunchMode = LaunchMode.SingleInstance, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 [IntentFilter(new[] { Intent.ActionSend },
           Categories = new[] {
               Intent.CategoryDefault
@@ -49,6 +50,8 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
     protected override async void OnCreate(Bundle? savedInstanceState)
     {
         Console.WriteLine($"{Tag}: OnCreate");
+
+        EdgeToEdge.Enable(this);
         base.OnCreate(savedInstanceState);
         Platform.Init(this, savedInstanceState);
 
@@ -66,37 +69,7 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
 
         AskPermissions();
 
-        LoadBillingClient();
-
-        await Task.Delay(400);
-
-        // look for intent data
-        Intent intent = this.Intent;
-        if (intent != null)
-        {
-            var data = intent.GetStringExtra(Intent.ExtraText);
-            if (data != null)
-            {
-                Console.WriteLine($"{Tag}: received data from intent: {data}");
-
-                MainPage mp = (MainPage)Shell.Current.CurrentPage;
-                await mp.ClearTextfield();
-                await mp.ShowEmptyUI();
-
-                MIsShared = true;
-
-                string SharedText = data.ToString();
-                TextField mTextField = (TextField)mp.FindByName("main_textfield");
-                if (mTextField != null)
-                {
-                    mTextField.Text = SharedText;
-                }
-                else
-                {
-                    Console.WriteLine($"{Tag} null textfield!");
-                }
-            }
-        }
+        //LoadBillingClient();
     }
 
     protected override void OnResume()
@@ -110,33 +83,46 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
     {
         base.OnNewIntent(intent);
 
+        Console.WriteLine($"{Tag}: OnNewIntent");
+
+        CheckForIntent(intent);
+
+    }
+
+    public async Task CheckForIntent()
+    {
+        CheckForIntent(this.Intent);
+    }
+
+    public async Task CheckForIntent(Intent intent)
+    {
+        MainPage mp = (MainPage)Shell.Current.CurrentPage;
+        await mp.ClearTextfield();
+        await mp.ShowEmptyUI();
+
         if (intent != null)
         {
-            Console.WriteLine($"{Tag}: received new intent");
+
             var data = intent.GetStringExtra(Intent.ExtraText);
             if (data != null)
             {
-                Console.WriteLine($"{Tag}: received data from new intent: {data}");
+                Console.WriteLine($"{Tag}: received data from intent: {data}");
 
-                MainPage mp = (MainPage)Shell.Current.CurrentPage;
-                mp.ClearTextfield();
-                mp.ShowEmptyUI();
-
-                MainPage.MIsShared = true;
+                Instaloader.MIsShared = true;
 
                 string SharedText = data.ToString();
                 TextField mTextField = (TextField)mp.FindByName("main_textfield");
                 if (mTextField != null)
                 {
                     mTextField.Text = SharedText;
+                    mp.HandleInput(SharedText);
+                }
+                else
+                {
+                    Console.WriteLine($"{Tag} null textfield!");
                 }
             }
         }
-
-
-        string shareText = Intent.GetStringExtra(Intent.ExtraText);
-
-
     }
 
     private void AskPermissions()
@@ -794,23 +780,49 @@ public class MainActivity : MauiAppCompatActivity, IPurchasesUpdatedListener
             }
 
             // close service and unregister receiver
-            ((MainPage)Shell.Current.CurrentPage).Services.Stop();
+            MainPage mp = ((MainPage)Shell.Current.CurrentPage);
+            mp.Services.Stop();
             context.UnregisterReceiver(this);
 
-            // update ui
-            MainThread.BeginInvokeOnMainThread(async () =>
+            // finish activity if shared
+            if (Instaloader.MIsShared)
             {
-                await ((MainPage)Shell.Current.CurrentPage).ShowFinishUI();
-                
-                // finish activity if shared
-                if (MIsShared)
-                {
-                    Console.WriteLine($"{Tag} calling FinishAfterTransition()");
-                    Platform.CurrentActivity.FinishAfterTransition();
-                }
-            });
+                Console.WriteLine($"{Tag} finishing activity...");
 
-            
+                ResetVars();
+                Instaloader.MIsShared = false;
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    // increment successful runs
+                    int runs = 1;
+                    if (Preferences.Default.ContainsKey("SUCCESSFUL_RUNS"))
+                    {
+                        runs += Preferences.Default.Get("SUCCESSFUL_RUNS", 0);
+                    }
+                    successfulRuns = runs;
+
+                    // set in prefs
+                    Preferences.Default.Set("SUCCESSFUL_RUNS", runs);
+                    Console.WriteLine($"{Tag} SUCCESSFUL_RUNS={runs}");
+
+                    // show success message
+                    mp.MMessageToast = $"Saved! In {AbsPathDocs}";
+                    AndHUD.Shared.ShowSuccess(MainActivity.ActivityCurrent, mp.MMessageToast, MaskType.Black, TimeSpan.FromMilliseconds(1600));
+
+                    // clear views
+                    await ((MainPage)Shell.Current.CurrentPage).ClearTextfield();
+                    await ((MainPage)Shell.Current.CurrentPage).ShowEmptyUI();
+                    await Task.Delay(400);
+                    // finish activity
+                    Platform.CurrentActivity.FinishAfterTransition();
+                });
+            }
+            else
+            {
+                ((MainPage)Shell.Current.CurrentPage).ShowFinishUI();
+            }
+
+
         }
     }
 

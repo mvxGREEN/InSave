@@ -65,9 +65,28 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:525658331083:android:fcae615ba92d12506bc84e",
+        "mobilesdk_app_id": "1:525658331083:android:2078c556246f61d26bc84e",
         "android_client_info": {
-          "package_name": "green.mobileapps.instaloader"
+          "package_name": "com.xxxgreen.mvx.downloader4vsco"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb_M4XN0rs0MdlZOTztwfbV6pmSA-kcnc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525658331083:android:4361825cc2ac6ec86bc84e",
+        "android_client_info": {
+          "package_name": "green.mobileapps.downloader4inflact"
         }
       },
       "oauth_client": [],

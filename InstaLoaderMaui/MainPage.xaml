@@ -52,10 +52,10 @@
     <AbsoluteLayout>
         <ScrollView AbsoluteLayout.LayoutBounds="0,0,1,1"
                 AbsoluteLayout.LayoutFlags="PositionProportional,SizeProportional">
-            <VerticalStackLayout Padding="20,0,20,0" Spacing="20">
+            <VerticalStackLayout Padding="20,20,20,0" Spacing="20">
                 <!-- TEXTFIELD -->
                 <material:TextField x:Name="main_textfield"
-                            Title="Paste URL…"
+                            Title="Paste Link…"
                             TitleColor="{AppThemeBinding Light={StaticResource DarkPointEight}, Dark={StaticResource PointEight}}"
                             AllowClear="True"
                             ClearButtonVisibility="WhileEditing"
@@ -101,8 +101,7 @@
                                         HeightRequest="380">
                                 <Grid>
                                     <WebView x:Name="preview_webview"
-                                    IsVisible="False"
-                                    IsEnabled="False"/>
+                                    IsVisible="False"/>
                                 </Grid>
                             </ScrollView>
                         </VerticalStackLayout>

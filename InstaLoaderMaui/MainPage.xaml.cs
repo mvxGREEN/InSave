@@ -11,7 +11,6 @@ using Android.OS;
 using AndroidHUD;
 using Firebase.Analytics;
 using CookieManager = Android.Webkit.CookieManager;
-using static Android.Renderscripts.ScriptGroup;
 
 namespace InstaLoaderMaui
 {
@@ -32,17 +31,17 @@ namespace InstaLoaderMaui
         public static string AbsPathDocs = "";
         public static string AbsPathDocsTemp = "";
         public static string MInput = "";
-        public static bool MIsProfile = false, MIsShared = false;
+        public static bool MIsProfile = false;
         public static string IgId = "";
         public static string MCookies = Preferences.Default.Get("COOKIES", "");
         public static bool MIsAlreadyLoading = false;
         public static List<string> MDownloadUrls = new List<string>();
 
-        public static string AdmobIdApp = "ca-app-pub-7417392682402637~9405504691";
+        public static string AdmobIdApp = "ca-app-pub-7417392682402637~6569990152";
         public static string admobIdInterTest = "ca-app-pub-3940256099942544/1033173712";
-        public static string admobIdInterReal = "ca-app-pub-7417392682402637/1763043737";
+        public static string admobIdInterReal = "ca-app-pub-7417392682402637/9248124383";
         public static string admobIdBannerTest = "ca-app-pub-3940256099942544/9214589741";
-        public static string admobIdBannerReal = "ca-app-pub-7417392682402637/9820437660";
+        public static string admobIdBannerReal = "ca-app-pub-7417392682402637/5503771756";
         public static string admobIdInter = admobIdInterTest;
         public string mAdmobIdBanner = admobIdBannerTest;
         public string MAdmobIdBanner
@@ -255,31 +254,34 @@ namespace InstaLoaderMaui
         {
             base.OnAppearing();
 
+            // prepare destination file dirs
+            PrepareFileDirs();
+
             // check gold
             MIsNotGold = !Preferences.Default.Get("IS_GOLD", false);
             Console.WriteLine($"{Tag}, IS_GOLD={!MIsNotGold}");
 
             // init firebase
             FirebaseApp.InitializeApp(MainActivity.ActivityCurrent);
-            // FirebaseAnalytics.GetInstance(MainActivity.ActivityCurrent);
 
             // init admob
             MainActivity.ActivityCurrent.LoadAdmob();
 
-            // prepare destination file dirs
-            PrepareFileDirs();
+            // check for shared intent
+            MainActivity.ActivityCurrent.CheckForIntent();
         }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            // destroy webview, client
+            /* destroy webview, client
             if (null != pwv)
             {
                 ((IWebViewHandler)pwv.Handler).PlatformView.SetWebViewClient(null);
                 ((IWebViewHandler)pwv.Handler).PlatformView.Destroy();
                 pwv = null;
             }
+            */
         }
 
         public static void PrepareFileDirs()
@@ -304,7 +306,7 @@ namespace InstaLoaderMaui
             MainPage.MFailedShowInter = false;
             MIsProfile = false;
             
-            MIsShared = false;
+            Instaloader.MIsShared = false;
             MIsAlreadyLoading = false;
             MDownloadUrls = new List<string>();
             MainActivity.DownloadReceiver.MCount = 0;
@@ -339,6 +341,7 @@ namespace InstaLoaderMaui
         public async Task ShowEmptyUI()
         {
             Console.WriteLine($"{Tag}: ShowEmptyUI");
+
             ResetVars();
             UpdateUpgradeItem();
             CloseFragment();
@@ -585,7 +588,7 @@ namespace InstaLoaderMaui
 
         private void OnRateClicked()
         {
-            var playStoreUrl = "https://play.google.com/store/apps/details?id=green.mobileapps.instaloader"; //Add here the url of your application on the store
+            var playStoreUrl = "https://play.google.com/store/apps/details?id=green.mobileapps.downloader4inflact"; //Add here the url of your application on the store
             Intent intent = new Intent(Intent.ActionView, Android.Net.Uri.Parse(playStoreUrl));
             //intent.SetPackage("com.android.vending");
             MainActivity.ActivityCurrent.StartActivity(intent);
@@ -596,7 +599,7 @@ namespace InstaLoaderMaui
             MFragmentTitle = title;
             if (title == "Upgrade")
             {
-                MFragmentSubtitle = "InstaLoader Gold";
+                MFragmentSubtitle = "Inflact Gold";
                 MFragmentBody = "✅  Profiles\n✅  Collections\n✅  Batch downloads\n✅  No more ads!";
                 MFragmentPositive = "Coming Soon";
                 MFragmentDismiss = "Nah";
@@ -605,14 +608,14 @@ namespace InstaLoaderMaui
             }
             else if (title == "Help")
             {
-                MFragmentSubtitle = "How to Use InstaLoader:";
-                MFragmentBody = "➊  Copy an Instagram link\n  ⓘ  Open IG >> \"Share\" >> \"Copy link\"\n➋  Tap ⚡ (paste into search bar)\n➌  Tap download (⬇)\n  ⓘ  Files saved [in Documents folder]";
+                MFragmentSubtitle = "How to Use Inflact:";
+                MFragmentBody = "➊  Copy a link\n  ⓘ  Open media >> \"Share\" >> \"Copy link\"\n➋  Tap ⚡ (paste into search bar)\n➌  Tap download (⬇)\n  ⓘ  Files saved [in Documents folder]";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
                 ((HorizontalStackLayout)FindByName("fragment_btn_layout")).IsVisible = false;
             }
             else if (title == "Rate")
             {
-                MFragmentSubtitle = "InstaLoader";
+                MFragmentSubtitle = "Inflact";
                 MFragmentBody = "Enjoying the app?\nLet me know!";
                 MFragmentPositive = "Rate";
                 MFragmentDismiss = "Nah";
@@ -622,7 +625,7 @@ namespace InstaLoaderMaui
             else if (title == "Downloader for VSCO")
             {
                 MFragmentSubtitle = "VscoLoader";
-                MFragmentBody = "Enjoying InstaLoader?\nTry our other app, VscoLoader!\n\n✦ Ad by Green Mobile ✦";
+                MFragmentBody = "Enjoying Inflact?\nTry our other app, VscoLoader!\n\n✦ Ad by Green Mobile ✦";
                 MFragmentPositive = "Get App";
                 MFragmentDismiss = "Nah";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
@@ -631,7 +634,7 @@ namespace InstaLoaderMaui
             else if (title == "Downloader for Spotify")
             {
                 MFragmentSubtitle = "SpotiFlyer";
-                MFragmentBody = "Enjoying InstaLoader?\nTry our other app, SpotiFlyer!\n\n✦ Ad by Green Mobile ✦";
+                MFragmentBody = "Enjoying Inflact?\nTry our other app, SpotiFlyer!\n\n✦ Ad by Green Mobile ✦";
                 MFragmentPositive = "Get App";
                 MFragmentDismiss = "Nah";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
@@ -640,7 +643,7 @@ namespace InstaLoaderMaui
             else if (title == "Downloader for Videos")
             {
                 MFragmentSubtitle = "SaveFrom";
-                MFragmentBody = "Enjoying InstaLoader?\nTry our other app, SaveFrom!\n\n✦ Ad by Green Mobile ✦";
+                MFragmentBody = "Enjoying Inflact?\nTry our other app, SaveFrom!\n\n✦ Ad by Green Mobile ✦";
                 MFragmentPositive = "Get App";
                 MFragmentDismiss = "Nah";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
@@ -649,7 +652,7 @@ namespace InstaLoaderMaui
             else if (title == "Downloader for Soundcloud")
             {
                 MFragmentSubtitle = "SoundLoader";
-                MFragmentBody = "Enjoying InstaLoader?\nTry our other app, SoundLoader!\n\n✦ Ad by Green Mobile ✦";
+                MFragmentBody = "Enjoying Inflact?\nTry our other app, SoundLoader!\n\n✦ Ad by Green Mobile ✦";
                 MFragmentPositive = "Get App";
                 MFragmentDismiss = "Nah";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
@@ -749,15 +752,15 @@ namespace InstaLoaderMaui
                 if (input.Length == 0)
                 {
                     Console.WriteLine("text field text cleared");
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        ShowEmptyUI();
-                    });
+                    ShowEmptyUI();
                 }
                 else if (lengthDiff > 1 || lengthDiff == 0)
                 {
                     Console.WriteLine("text field text pasted");
-                    HandleInput(input);
+                    if (input != null && !Instaloader.MIsShared)
+                    {
+                        HandleInput(input);
+                    }
                 }
                 else if (lengthDiff == 1)
                 {
@@ -890,13 +893,14 @@ namespace InstaLoaderMaui
             ((IWebViewHandler)pwv.Handler).PlatformView
                 .SetWebViewClient(new MWebViewClient());
 
+            // load home url
+            //((IWebViewHandler)pwv.Handler).PlatformView
+            //    .LoadUrl("https://www.instagram.com/?hl=en");
+
             // check for session id
             if (MCookies.Contains("sessionid="))
             {
                 Console.WriteLine($"{Tag} already logged in! MCookies={MCookies}");
-
-                // set webview cookies
-                //CookieManager.Instance.SetCookie(MInput, MCookies);
 
                 // load media page
                 ((IWebViewHandler)pwv.Handler).PlatformView.Post(() =>
@@ -1057,13 +1061,14 @@ namespace InstaLoaderMaui
                     // scroll to bottom
                     pmv.EvaluateJavaScriptAsync("(function() { window.scrollTo(0, document.body.scrollHeight); })();");
 
-                    // hide progress ring & preview image
+                    // hide progress & thumbnail
                     ProgressRing pr = (ProgressRing)mp.FindByName("progress_ring");
                     Image previewImg = (Image)mp.FindByName("preview_img");
                     Label pl = (Label)mp.FindByName("progress_label");
                     pr.IsVisible = false;
                     pl.IsVisible = false;
                     previewImg.IsVisible = false;
+
                     // show webview
                     Console.WriteLine($"{Tag} showing webview...");
                     Microsoft.Maui.Controls.WebView pwv = (Microsoft.Maui.Controls.WebView)mp.FindByName("preview_webview");
@@ -1141,13 +1146,21 @@ namespace InstaLoaderMaui
                         // update thumbnail
                         ((MainPage)Shell.Current.CurrentPage).MThumbnailUrl = MDownloadUrls.FirstOrDefault();
 
-                        // update webview
-                        pmv.IsVisible = false;
-                        ((IWebViewHandler)pmv.Handler).PlatformView.SetWebViewClient(null);
-                        pmv.IsVisible = false;
-                        pmv.IsEnabled = false;
+                        // hide webview
+                        Console.WriteLine($"{Tag} showing webview...");
+                        Microsoft.Maui.Controls.WebView pwv = (Microsoft.Maui.Controls.WebView)mp.FindByName("preview_webview");
+                        pwv.IsVisible = false;
 
-                        if (MIsShared)
+                        // show progress & thumbnail
+                        ProgressRing pr = (ProgressRing)mp.FindByName("progress_ring");
+                        Image previewImg = (Image)mp.FindByName("preview_img");
+                        Label pl = (Label)mp.FindByName("progress_label");
+                        pr.IsVisible = true;
+                        pl.IsVisible = true;
+                        previewImg.IsVisible = true;
+
+                        // start download if shared
+                        if (Instaloader.MIsShared)
                         {
                             mp.OnDownloadClicked();
                         } else

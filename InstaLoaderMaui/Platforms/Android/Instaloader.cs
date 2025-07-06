@@ -8,6 +8,7 @@ public static class Instaloader
 {
     private static readonly string Tag = nameof(Instaloader);
 
+    public static bool MIsShared = false;
     public static async Task DownloadFile(string url, int index)
     {
         Console.WriteLine($"{Tag} DownloadFile url={url} index={index}");
@@ -34,7 +35,7 @@ public static class Instaloader
 
         // start download
         DownloadManager.Request request = new DownloadManager.Request(fileUri);
-        request.SetTitle("instaloader");
+        request.SetTitle(fileName);
         request.SetDescription("");
         request.SetNotificationVisibility(DownloadVisibility.VisibleNotifyCompleted);
         request.SetDestinationInExternalPublicDir(fileDir, fileName);
