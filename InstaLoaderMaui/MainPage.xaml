@@ -249,7 +249,6 @@
                                 <Label 
                                      x:Name="fragment_subtitle"
                                      Text="{Binding MFragmentSubtitle}"
-                                     FontAttributes="Italic"
                                      FontSize="Large"
                                      TextColor="{StaticResource DarkPointEight}"
                                      VerticalTextAlignment="Start"

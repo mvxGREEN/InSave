@@ -30,6 +30,10 @@ public static class MauiProgram
                 fonts.AddMaterialIconFonts();
             });
 
+        // dependency injection
+        builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<IServiceDownload, DownloadService>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif

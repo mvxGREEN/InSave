@@ -562,7 +562,7 @@ namespace InstaLoaderMaui
             MFragmentTitle = title;
             if (title == "Upgrade")
             {
-                MFragmentSubtitle = "InFlyer Gold";
+                MFragmentSubtitle = "InSave Gold";
                 MFragmentBody = "✅  Profiles\n✅  Collections\n✅  Batch downloads\n✅  No more ads!";
                 MFragmentPositive = "Coming Soon";
                 MFragmentDismiss = "Nah";
@@ -571,14 +571,14 @@ namespace InstaLoaderMaui
             }
             else if (title == "Help")
             {
-                MFragmentSubtitle = "How to Use InFlyer:";
+                MFragmentSubtitle = "How to Use InSave:";
                 MFragmentBody = "➊  Copy a link\n  ⓘ  Open media >> \"Share\" >> \"Copy link\"\n➋  Tap ⚡ (paste into search bar)\n➌  Tap download (⬇)\n  ⓘ  Files saved [in Documents folder]";
                 ((Label)FindByName("fragment_body")).LineHeight = 1.25;
                 ((HorizontalStackLayout)FindByName("fragment_btn_layout")).IsVisible = false;
             }
             else if (title == "Rate")
             {
-                MFragmentSubtitle = "InFlyer";
+                MFragmentSubtitle = "InSave";
                 MFragmentBody = "Enjoying the app?\nLet me know!";
                 MFragmentPositive = "Rate";
                 MFragmentDismiss = "Nah";
