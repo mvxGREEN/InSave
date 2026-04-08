@@ -7,6 +7,7 @@ using Firebase;
 using Firebase.Analytics;
 using Microsoft.Maui.Handlers;
 using MPowerKit.ProgressRing;
+using Plugin.MauiMTAdmob;
 using System.Text.RegularExpressions;
 using UraniumUI.Material.Controls;
 using static Android.Icu.Text.CaseMap;
@@ -463,15 +464,20 @@ namespace InstaLoaderMaui
             Console.WriteLine($"{Tag} SUCCESSFUL_RUNS={runs}");
 
             // sometimes show popup
-            int cycle = successfulRuns % 12;
-            if (MIsNotGold && (cycle == 1 || cycle == 7))
+            int cycle = successfulRuns % 4;
+            if (MIsNotGold 
+                && cycle == 0 
+                && CrossMauiMTAdmob.Current.IsInterstitialLoaded())
+            {
+                CrossMauiMTAdmob.Current.ShowInterstitial();
+            }
+            else if (MIsNotGold && cycle == 3)
             {
                 ShowPopup("Rate");
             }
-            else if (MIsNotGold && (cycle == 9 || cycle == 4))
-            {
-                ShowPopup("VscoLoader");
-            }
+
+            // load next interstitial
+            CrossMauiMTAdmob.Current.LoadInterstitial(admobIdInter);
 
             // show success message
             MMessageToast = $"Saved! In {AbsPathDocs}";
