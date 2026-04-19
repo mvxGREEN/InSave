@@ -1,11 +1,11 @@
-# InSave 📸
+# InSave 📸⬇️
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/mvxGREEN/InSave/actions)
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
 [![Language: C#](https://img.shields.io/badge/Language-C%23-blue.svg)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![Framework: .NET](https://img.shields.io/badge/Framework-.NET-512BD4.svg)](https://dotnet.microsoft.com/)
 
-An efficient Instagram downloader application built for Android with the .NET MAUI framework.  Easily download Instagram photos, videos, stories, reels and more.
+An efficient Instagram downloader application built for Android with the .NET MAUI framework.  Easily download Instagram posts, photos, videos, stories, reels and more.
 
 ## ✨ Features
 * **Media Downloader**: Download your favorite Instagram posts, including photos, videos, and stories, directly to your device.
