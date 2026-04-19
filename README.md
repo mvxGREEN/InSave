@@ -1,6 +1,6 @@
 # InSave-MAUI-Android 📸⬇️
 
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/mvxGREEN/InSave-MAUI-Android/actions)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/mvxGREEN/InSave/actions)
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
 [![Language: C#](https://img.shields.io/badge/Language-C%23-blue.svg)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84.svg)](https://developer.android.com/)
@@ -24,7 +24,7 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
 
 ## ⚡️ Quick Start App
 
-1. Download latest APK from [Releases](https://github.com/mvxGREEN/InSave-MAUI-Android/releases) to an Android device.
+1. Download latest APK from [Releases](https://github.com/mvxGREEN/InSave/releases) to an Android device.
 
 2. Open APK file to install.
 
@@ -39,10 +39,10 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
 ### Installation & Build
 
 1. **Clone the repository**
-    `git clone https://github.com/mvxGREEN/InSave-MAUI-Android.git`
+    `git clone https://github.com/mvxGREEN/InSave.git`
 
 2. **Open the project in Visual Studio**
-   * Launch Visual Studio 2022.
+   * Launch Visual Studio
    * Select **Open a project or solution**.
    * Navigate to the cloned directory and open solution file.
 
@@ -61,7 +61,7 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! 
-Feel free to check the [issues page](https://github.com/mvxGREEN/InSave-MAUI-Android/issues) if you want to contribute. 
+Feel free to check the [issues page](https://github.com/mvxGREEN/InSave/issues) if you want to contribute. 
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
