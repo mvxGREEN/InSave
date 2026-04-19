@@ -1,6 +1,6 @@
-# InSave 📸⬇️
+# InSave-MAUI-Android 📸⬇️
 
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/mvxGREEN/InSave-MAUI/actions)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/mvxGREEN/InSave-MAUI-Android/actions)
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
 [![Language: C#](https://img.shields.io/badge/Language-C%23-blue.svg)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android-3DDC84.svg)](https://developer.android.com/)
@@ -22,9 +22,15 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
 * **Target Platform**: Android (via .NET MAUI)
 * **IDE**: Visual Studio / Visual Studio for Mac
 
-## 🚀 Getting Started
+## ⚡️ Quick Start App
 
-To get a local copy up and running, follow these simple steps.
+1. Download latest APK from [Releases](https://github.com/mvxGREEN/InSave-MAUI-Android/releases) to an Android device.
+
+2. Open APK file to install.
+
+3. Done!  Open **InSave** app to start downloading media from Instagram.
+
+## 💻 Build App from Source Code
 
 ### Prerequisites
 * **Visual Studio 2022** (version 17.3 or later) with the **.NET Multi-platform App UI development** workload installed.
@@ -33,12 +39,12 @@ To get a local copy up and running, follow these simple steps.
 ### Installation & Build
 
 1. **Clone the repository**
-    `git clone https://github.com/mvxGREEN/InSave-MAUI.git`
+    `git clone https://github.com/mvxGREEN/InSave-MAUI-Android.git`
 
 2. **Open the project in Visual Studio**
    * Launch Visual Studio 2022.
    * Select **Open a project or solution**.
-   * Navigate to the cloned directory and select the `InstaLoaderMaui.sln` solution file.
+   * Navigate to the cloned directory and open solution file.
 
 3. **Restore Dependencies**
    * Wait for NuGet to automatically restore the required packages. You can also right-click the solution in the Solution Explorer and click **Restore NuGet Packages**.
@@ -55,7 +61,7 @@ To get a local copy up and running, follow these simple steps.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! 
-Feel free to check the [issues page](https://github.com/mvxGREEN/InSave-MAUI/issues) if you want to contribute. 
+Feel free to check the [issues page](https://github.com/mvxGREEN/InSave-MAUI-Android/issues) if you want to contribute. 
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
