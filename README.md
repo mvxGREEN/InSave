@@ -11,7 +11,7 @@ An efficient Instagram downloader application built for Android with the .NET MA
 ## ✨ Features
 * **Media Downloader**: Download your favorite Instagram posts, including photos, videos, and stories, directly to your device.
 * **Cross-Platform Ready Code**: Built using .NET MAUI, meaning the core logic and UI can easily be extended to other platforms like iOS or Windows in the future.
-* **C# Powered**: Written entirely (100%) in C#, utilizing the robust .NET ecosystem and standard modern coding practices.
+* **C# Powered**: Written entirely in C#, utilizing the robust .NET ecosystem and standard modern coding practices.
 * **Intuitive UI**: A clean, responsive interface designed for Android devices using MAUI's XAML/C# structures.
 
 ## 🛠 Tech Stack
