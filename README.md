@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/launcher_insave_round.png" alt="InSave Round App Icon" width="200"/>
+</p>
+
 # InSave ⬇️
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/mvxGREEN/InSave/actions)
@@ -21,6 +25,18 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
 * **Language**: C#
 * **Target Platform**: Android (via .NET MAUI)
 * **IDE**: Visual Studio / Visual Studio for Mac
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="assets/Screenshot 1.png" width="200"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/Screenshot 2.png" width="200"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/Screenshot 3.png" width="200"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/Screenshot 4.png" width="180"/>
+</p>
 
 ## ⚡️ Quick Start App
 
