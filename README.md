@@ -35,7 +35,7 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/Screenshot 3.png" width="200"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/Screenshot 4.png" width="180"/>
+  <img src="assets/Screenshot 4.png" width="200"/>
 </p>
 
 ## ⚡️ Quick Start App
