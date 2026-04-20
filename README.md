@@ -14,18 +14,6 @@
 
 Quickly download Instagram posts, photos, videos, stories, reels and more.
 
-## ✨ Features
-* **Media Downloader**: Supports Instagram posts, photos, videos, stories, reels and more.
-* **Share-to-Download**: Download without leaving the Instagram app!  Simply share target media to the InSave app to start downloading.
-* **Cross-Platform Ready Code**: Built using .NET MAUI, meaning the core logic and UI can easily be extended to other platforms like iOS or Windows in the future.
-* **Intuitive UI**: A clean, responsive interface designed for Android devices using MAUI's XAML/C# structures.
-
-## 🛠 Tech Stack
-* **Framework**: [.NET MAUI](https://learn.microsoft.com/en-us/dotnet/maui/) (Multi-platform App UI)
-* **Language**: C#
-* **Target Platform**: Android (via .NET MAUI)
-* **IDE**: Visual Studio / Visual Studio for Mac
-
 ## 📸 Screenshots
 
 <p align="center">
@@ -37,6 +25,18 @@ Quickly download Instagram posts, photos, videos, stories, reels and more.
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/Screenshot 4.png" width="160"/>
 </p>
+
+## ✨ Features
+* **Media Downloader**: Supports Instagram posts, photos, videos, stories, reels and more.
+* **Share-to-Download**: Download without leaving the Instagram app!  Simply share target media to the InSave app to start downloading.
+* **Cross-Platform Ready Code**: Built using .NET MAUI, meaning the core logic and UI can easily be extended to other platforms like iOS or Windows in the future.
+* **Intuitive UI**: A clean, responsive interface designed for Android devices using MAUI's XAML/C# structures.
+
+## 🛠 Tech Stack
+* **Framework**: [.NET MAUI](https://learn.microsoft.com/en-us/dotnet/maui/) (Multi-platform App UI)
+* **Language**: C#
+* **Target Platform**: Android (via .NET MAUI)
+* **IDE**: Visual Studio / Visual Studio for Mac
 
 ## ⚡️ Quick Start App
 
